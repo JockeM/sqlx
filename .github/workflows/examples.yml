@@ -153,6 +153,20 @@ jobs:
           command: test
           args: -p sqlx-example-postgres-axum-social
 
+      - name: Chat (Setup)
+        working-directory: examples/postgres/chat
+        env:
+          DATABASE_URL: postgres://postgres:password@localhost:5432/chat
+        run: sqlx db create
+
+      - name: Chat (Run)
+        uses: actions-rs/cargo@v1
+        env:
+          DATABASE_URL: postgres://postgres:password@localhost:5432/chat
+        with:
+          command: run
+          args: -p sqlx-example-postgres-chat
+
       - name: Files (Setup)
         working-directory: examples/postgres/files
         env:
@@ -180,20 +194,6 @@ jobs:
         with:
           command: run
           args: -p sqlx-example-postgres-json
-
-      - name: Listen (Setup)
-        working-directory: examples/postgres/listen
-        env:
-          DATABASE_URL: postgres://postgres:password@localhost:5432/listen
-        run: sqlx db create
-
-      - name: Listen (Run)
-        uses: actions-rs/cargo@v1
-        env:
-          DATABASE_URL: postgres://postgres:password@localhost:5432/listen
-        with:
-          command: run
-          args: -p sqlx-example-postgres-listen
 
       - name: Mockable TODOs (Setup)
         working-directory: examples/postgres/mockable-todos
