@@ -40,11 +40,11 @@ impl ChatApp {
     ) -> Result<(), Box<dyn Error>> {
         // setup listener task
         let messages = self.messages.clone();
-        std::mem::drop(tokio::spawn(async move {
+        tokio::spawn(async move {
             while let Ok(msg) = listener.recv().await {
                 messages.lock().await.push(msg.payload().to_string());
             }
-        }));
+        });
 
         loop {
             let messages: Vec<ListItem> = self
@@ -67,7 +67,8 @@ impl ChatApp {
             if let Event::Key(key) = event::read()? {
                 match key.code {
                     KeyCode::Enter => {
-                        notify(&self.pool, self.input.drain(..).collect()).await?;
+                        notify(&self.pool, &self.input).await?;
+                        self.input.clear();
                     }
                     KeyCode::Char(c) => {
                         self.input.push(c);
@@ -162,7 +163,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     Ok(())
 }
 
-async fn notify(pool: &PgPool, s: String) -> Result<(), sqlx::Error> {
+async fn notify(pool: &PgPool, s: &str) -> Result<(), sqlx::Error> {
     sqlx::query(
         r#"
 SELECT pg_notify(chan, payload)

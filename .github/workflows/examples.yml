@@ -153,20 +153,6 @@ jobs:
           command: test
           args: -p sqlx-example-postgres-axum-social
 
-      - name: Chat (Setup)
-        working-directory: examples/postgres/chat
-        env:
-          DATABASE_URL: postgres://postgres:password@localhost:5432/chat
-        run: sqlx db create
-
-      - name: Chat (Run)
-        uses: actions-rs/cargo@v1
-        env:
-          DATABASE_URL: postgres://postgres:password@localhost:5432/chat
-        with:
-          command: run
-          args: -p sqlx-example-postgres-chat
-
       - name: Files (Setup)
         working-directory: examples/postgres/files
         env:
